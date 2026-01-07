@@ -39,7 +39,7 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
 ## Installation
 
  1. **Clone the repository**
-   bash
+   ```bash
    git clone [https://github.com/haniiiyee/TARK-Aerospace-AI.git](https://github.com/haniiiyee/TARK-Aerospace-AI.git)
    cd TARK-Aerospace-AI
 
@@ -60,7 +60,7 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
     ```bash
     streamlit run app.py
 
-**System Architecture**
+## System Architecture
  Ingestion: Technical PDFs (like IDSS manuals) are parsed and split into chunks.
  Embedding: Text is converted to vectors using all-MiniLM-L6-v2 and stored in a local ChromaDB.
  Retrieval: Whisper transcribes voice queries; the system performs a similarity search (k=10) to find precise technical data.
