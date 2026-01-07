@@ -42,16 +42,19 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
    ```bash
    git clone [https://github.com/haniiiyee/TARK-Aerospace-AI.git](https://github.com/haniiiyee/TARK-Aerospace-AI.git)
    cd TARK-Aerospace-AI
+   
  2. **Install Dependencies**
     Ensure you have Python installed, then run the following to install the required libraries:
     ```bash
     pip install -r requirements.txt
+
  3. **Setup Ollama (Local AI Engine)**
     TARK requires Ollama to run the LLM locally.
     Download and install Ollama.
     Once installed, pull the Phi-3 model by running this command in your terminal:
     ```bash
     ollama pull phi3
+
  4. **Launch Mission Control**
     Start the TARK interface using Streamlit:
     ```bash
