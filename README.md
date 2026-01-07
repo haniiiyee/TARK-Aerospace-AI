@@ -38,6 +38,7 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
 
 ## Installation
  1. **Clone the Repository**
+   Make sure to clone the repository
    ```bash
    git clone [https://github.com/haniiiyee/TARK-Aerospace-AI.git](https://github.com/haniiiyee/TARK-Aerospace-AI.git)
    cd TARK-Aerospace-AI
