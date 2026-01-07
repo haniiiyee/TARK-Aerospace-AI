@@ -37,8 +37,7 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
  * **Interface:** Streamlit
 
 ## Installation
-
- 1. **Clone the repository**
+1. **Clone the Repository**
    bash
    git clone [https://github.com/haniiiyee/TARK-Aerospace-AI.git](https://github.com/haniiiyee/TARK-Aerospace-AI.git)
    cd TARK-Aerospace-AI
