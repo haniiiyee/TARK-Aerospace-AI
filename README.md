@@ -37,13 +37,14 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
  * **Interface:** Streamlit
 
 ## Installation
-1. **Clone the Repository**
-   bash
+ 1. **Clone the Repository**
+   ```bash
    git clone [https://github.com/haniiiyee/TARK-Aerospace-AI.git](https://github.com/haniiiyee/TARK-Aerospace-AI.git)
    cd TARK-Aerospace-AI
 
  2. **Install Dependencies**
     Ensure you have Python installed, then run the following to install the required libraries:
+
     ```bash
     pip install -r requirements.txt
 
