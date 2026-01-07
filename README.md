@@ -40,6 +40,7 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
 
  1. **Clone the repository**
    bash
+   ```bash
    git clone [https://github.com/haniiiyee/TARK-Aerospace-AI.git](https://github.com/haniiiyee/TARK-Aerospace-AI.git)
    cd TARK-Aerospace-AI
 
