@@ -52,7 +52,7 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
     TARK requires Ollama to run the LLM locally.
     Download and install Ollama.
     Once installed, pull the Phi-3 model by running this command in your terminal:
-    bash
+    ```bash
     ollama pull phi3
 
  4. **Launch Mission Control**
