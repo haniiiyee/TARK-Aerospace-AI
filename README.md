@@ -29,12 +29,12 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
 4. **Reasoning:** The local Phi-3 model processes the context to generate an accurate, cited response.
 
 ## Tech Stack
-* **Language:** Python 3.10+
-* **LLM:** Ollama (Phi-3 Mini)
-* **Vector DB:** ChromaDB
-* **Speech:** OpenAI Whisper
-* **Orchestration:** LangChain
-* **Interface:** Streamlit
+ * **Language:** Python 3.10+
+ * **LLM:** Ollama (Phi-3 Mini)
+ * **Vector DB:** ChromaDB
+ * **Speech:** OpenAI Whisper
+ * **Orchestration:** LangChain
+ * **Interface:** Streamlit
 
 ## Installation
 
@@ -44,7 +44,7 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
    cd TARK-Aerospace-AI
  2. **Install Dependencies**
     Ensure you have Python installed, then run the following to install the required libraries:
-    Bash
+    ```bash
     pip install -r requirements.txt
  3. **Setup Ollama (Local AI Engine)**
     TARK requires Ollama to run the LLM locally.
@@ -57,8 +57,10 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
     Bash
     streamlit run app.py
 
-System Architecture
-Ingestion: Technical PDFs (like IDSS manuals) are parsed and split into chunks.
-Embedding: Text is converted to vectors using all-MiniLM-L6-v2 and stored in a local ChromaDB.
-Retrieval: Whisper transcribes voice queries; the system performs a similarity search (k=10) to find precise technical data.
-Reasoning: The local Phi-3 model processes the context to generate an accurate, cited response.
+**System Architecture**
+ Ingestion: Technical PDFs (like IDSS manuals) are parsed and split into chunks.
+ Embedding: Text is converted to vectors using all-MiniLM-L6-v2 and stored in a local ChromaDB.
+ Retrieval: Whisper transcribes voice queries; the system performs a similarity search (k=10) to find precise technical data.
+ Reasoning: The local Phi-3 model processes the context to generate an accurate, cited response.
+
+Architected & Built by Hani Mohammad Kaif
