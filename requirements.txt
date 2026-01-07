@@ -1,0 +1,14 @@
+streamlit
+numpy<2.0
+langchain==0.2.6
+langchain-community==0.2.6
+langchain-core==0.2.10
+langchain-text-splitters==0.2.2
+langchain-chroma==0.1.2
+langchain-huggingface==0.0.3
+chromadb==0.5.4
+sentence-transformers
+pypdf
+openai-whisper
+sounddevice
+scipy
