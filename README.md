@@ -57,7 +57,7 @@ As the **Sole Architect and Lead Developer**, I conceptualized TARK to bridge th
 
  4. **Launch Mission Control**
     Start the TARK interface using Streamlit:
-    Bash
+    ```bash
     streamlit run app.py
 
 **System Architecture**
