@@ -39,7 +39,6 @@ st.markdown("""<style>
     font-family: 'Rajdhani', sans-serif;
 }
 
-/* MAIN TITLE (reusing sidebar style) */
 .sidebar-header {
     font-family: 'Orbitron';
     font-size: 1.4em;
@@ -48,7 +47,6 @@ st.markdown("""<style>
     padding-top: 20px;
 }
 
-/* LARGE TITLE OVERRIDE */
 .main-header {
     font-family: 'Orbitron';
     font-size: 5em;
@@ -58,7 +56,6 @@ st.markdown("""<style>
     margin-bottom: 10px;
 }
 
-/* SUBTITLE */
 .subtitle-container {
     padding: 25px 0 30px 0;
     margin-bottom: 40px;
@@ -71,7 +68,6 @@ st.markdown("""<style>
     text-transform: uppercase;
 }
 
-/* SIDEBAR */
 section[data-testid="stSidebar"] {
     background-color: #050f1e;
     border-right: 2px solid #FF9933;
@@ -87,14 +83,12 @@ section[data-testid="stSidebar"] {
     font-weight: bold;
 }
 
-/* CHAT */
 .stChatMessage {
     background-color: #162a4d;
     border: 1px solid #4a6fa5;
     border-radius: 4px;
 }
 
-/* BUTTONS */
 div.stButton > button {
     background: transparent;
     border: 1px solid #FF9933;
@@ -108,6 +102,9 @@ div.stButton > button {
 # --- 3. BACKEND ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+if "awaiting_response" not in st.session_state:
+    st.session_state.awaiting_response = False
 
 @st.cache_resource
 def load_system():
@@ -168,20 +165,30 @@ def display_chat_history():
 
 def append_user_message(content):
     st.session_state.messages.append({"role": "user", "content": content})
+    st.session_state.awaiting_response = True
     st.rerun()
 
 def generate_ai_response():
-    if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
-        with st.chat_message("assistant"):
-            with st.spinner("ANALYZING FLIGHT DATA..."):
-                res = st.session_state.qa_chain.invoke(
-                    {"query": st.session_state.messages[-1]["content"]}
-                )
-                answer = res["result"]
-                pages = sorted({f"p.{d.metadata.get('page',0)+1}" for d in res["source_documents"]})
-                output = f"{answer}\n\n**SOURCE:** {', '.join(pages)}"
-                st.markdown(output)
-                st.session_state.messages.append({"role": "assistant", "content": output})
+    if (
+        st.session_state.awaiting_response
+        and st.session_state.messages
+        and st.session_state.messages[-1]["role"] == "user"
+    ):
+        st.session_state.awaiting_response = False
+
+        # 🔴 FIX: spinner OUTSIDE chat bubble
+        with st.spinner("ANALYZING FLIGHT DATA..."):
+            res = st.session_state.qa_chain.invoke(
+                {"query": st.session_state.messages[-1]["content"]}
+            )
+            answer = res["result"]
+            pages = sorted({f"p.{d.metadata.get('page',0)+1}" for d in res["source_documents"]})
+            output = f"{answer}\n\n**SOURCE:** {', '.join(pages)}"
+
+        st.session_state.messages.append(
+            {"role": "assistant", "content": output}
+        )
+        st.rerun()
 
 # --- 4. UI ---
 def main():
@@ -219,27 +226,23 @@ def main():
             st.session_state.qa_chain = load_system()
             st.session_state.whisper = load_whisper()
 
-    # Display chat history and AI response
     display_chat_history()
     generate_ai_response()
 
-    # ---- INPUT AREA (MIC + CHAT INPUT ALIGNED) ----
     col1, col2 = st.columns([1, 6])
 
     with col1:
-        mic_clicked = st.button("🎙️ COMMS")  # store click
+        mic_clicked = st.button("🎙️ COMMS")
 
     with col2:
-        user_text = st.chat_input("Enter emergency protocol query...")  # chat input
+        user_text = st.chat_input("Enter emergency protocol query...")
 
-    # Handle mic input
     if mic_clicked:
         audio = record_audio()
         text = transcribe_audio(audio, st.session_state.whisper)
         if text:
             append_user_message(text)
 
-    # Handle chat input
     if user_text:
         append_user_message(user_text)
 
