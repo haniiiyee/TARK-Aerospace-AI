@@ -30,8 +30,7 @@ class Config:
     RECORD_SECONDS = 5
 
 # --- 2. THEME ---
-st.markdown("""
-<style>
+st.markdown("""<style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
 
 .stApp {
@@ -104,43 +103,7 @@ div.stButton > button {
     font-size: 1.2em;
     width: 100%;
 }
-</style>
-""", unsafe_allow_html=True)
-
-# --- 3. BACKEND ---
-import streamlit as st
-import os
-import sounddevice as sd
-import numpy as np
-import scipy.io.wavfile as wav
-import whisper
-from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
-from langchain_community.llms import Ollama
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
-
-# --- 1. CONFIGURATION ---
-st.set_page_config(
-    page_title="TARK | v2.0",
-    page_icon="🛰️",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-class Config:
-    PDF_PATH = "satellite_manual.pdf"
-    DB_DIR = "chroma_db_tark"
-    MODEL_NAME = "phi3"
-    EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-    WHISPER_MODEL = "base"
-    SAMPLE_RATE = 44100
-    RECORD_SECONDS = 5
-
-# --- 2. THEME ---
-st.markdown("""<style>/* unchanged CSS */</style>""", unsafe_allow_html=True)
+</style>""", unsafe_allow_html=True)
 
 # --- 3. BACKEND ---
 if "messages" not in st.session_state:
@@ -153,7 +116,6 @@ def load_system():
 
     loader = PyPDFLoader(Config.PDF_PATH)
     documents = loader.load()
-
     splitter = RecursiveCharacterTextSplitter(chunk_size=600, chunk_overlap=100)
     splits = splitter.split_documents(documents)
 
@@ -169,11 +131,7 @@ Question: {question}
 
 Answer:"""
 
-    prompt = PromptTemplate(
-        input_variables=["context", "question"],
-        template=template
-    )
-
+    prompt = PromptTemplate(input_variables=["context", "question"], template=template)
     llm = Ollama(model=Config.MODEL_NAME)
 
     return RetrievalQA.from_chain_type(
@@ -201,6 +159,29 @@ def record_audio(filename="query.wav"):
 
 def transcribe_audio(file, model):
     return model.transcribe(file, fp16=False)["text"].strip()
+
+# --- HELPER FUNCTIONS ---
+def display_chat_history():
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+def append_user_message(content):
+    st.session_state.messages.append({"role": "user", "content": content})
+    st.rerun()
+
+def generate_ai_response():
+    if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
+        with st.chat_message("assistant"):
+            with st.spinner("ANALYZING FLIGHT DATA..."):
+                res = st.session_state.qa_chain.invoke(
+                    {"query": st.session_state.messages[-1]["content"]}
+                )
+                answer = res["result"]
+                pages = sorted({f"p.{d.metadata.get('page',0)+1}" for d in res["source_documents"]})
+                output = f"{answer}\n\n**SOURCE:** {', '.join(pages)}"
+                st.markdown(output)
+                st.session_state.messages.append({"role": "assistant", "content": output})
 
 # --- 4. UI ---
 def main():
@@ -238,41 +219,29 @@ def main():
             st.session_state.qa_chain = load_system()
             st.session_state.whisper = load_whisper()
 
-    # ---- CHAT HISTORY ----
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+    # Display chat history and AI response
+    display_chat_history()
+    generate_ai_response()
 
-    # ---- AI RESPONSE (comes immediately after user question) ----
-    if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
-        with st.chat_message("assistant"):
-            with st.spinner("ANALYZING FLIGHT DATA..."):
-                res = st.session_state.qa_chain.invoke(
-                    {"query": st.session_state.messages[-1]["content"]}
-                )
-                answer = res["result"]
-                pages = sorted(
-                    {f"p.{d.metadata.get('page',0)+1}" for d in res["source_documents"]}
-                )
-                output = f"{answer}\n\n**SOURCE:** {', '.join(pages)}"
-                st.markdown(output)
-                st.session_state.messages.append({"role": "assistant", "content": output})
-
-    # ---- INPUT AREA (NOW AT THE BOTTOM) ----
+    # ---- INPUT AREA (MIC + CHAT INPUT ALIGNED) ----
     col1, col2 = st.columns([1, 6])
 
     with col1:
-        if st.button("🎙️ COMMS"):
-            audio = record_audio()
-            text = transcribe_audio(audio, st.session_state.whisper)
-            if text:
-                st.session_state.messages.append({"role": "user", "content": text})
-                st.rerun()
+        mic_clicked = st.button("🎙️ COMMS")  # store click
 
     with col2:
-        if prompt := st.chat_input("Enter emergency protocol query..."):
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            st.rerun()
+        user_text = st.chat_input("Enter emergency protocol query...")  # chat input
+
+    # Handle mic input
+    if mic_clicked:
+        audio = record_audio()
+        text = transcribe_audio(audio, st.session_state.whisper)
+        if text:
+            append_user_message(text)
+
+    # Handle chat input
+    if user_text:
+        append_user_message(user_text)
 
 if __name__ == "__main__":
     main()
