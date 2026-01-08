@@ -4,3 +4,17 @@ chroma_db_data/
 *.pyc
 .DS_Store
 .env
+# Ignore Database folders
+chroma_db_*/
+chroma_db_data/
+
+# Ignore Runtime media
+*.wav
+*.mp3
+
+# Ignore Virtual Environment
+venv/
+env/
+
+# Ignore Python cache
+__pycache__/
